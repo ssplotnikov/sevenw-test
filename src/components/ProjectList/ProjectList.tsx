@@ -3,20 +3,23 @@ import './ProjectList.style.sass'
 
 export default function ProjectList() {
     return (
-        <div className="porject-list">
+        <div className="project-list">
             <div className="name-proj">
-                <div >
-                    NameProject
+                <div>
+                    <div >
+                        NameProject
+                    </div>
+                    <div>
+                        Абрревиатура
+                    </div>
                 </div>
                 <div>
-                    Абрревиатура
+                    стрелочка
                 </div>
             </div>
             <div className='list'>
                 <div className='list__item' >
-                    <div className="list__item__icon">
-                        Icon
-                    </div>
+                    <div className="list__item__icon" />
                     <div>
                         NameSpace
                     </div>
