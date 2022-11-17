@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './ProjectList.style.sass'
 
 export default function ProjectList() {
@@ -18,12 +19,12 @@ export default function ProjectList() {
                 </div>
             </div>
             <div className='list'>
-                <div className='list__item' >
+                <Link className='list__item' to="/" >
                     <div className="list__item__icon" />
                     <div>
                         NameSpace
                     </div>
-                </div>
+                </Link>
             </div>
         </div>
     )

@@ -15,6 +15,7 @@
 
 .list
   width: 100%
+
   display: flex
   justify-content: center 
   align-items: flex-start
@@ -22,10 +23,20 @@
   gap: 10px
   color: white
   &__item
+    height: 30px
+    width: 100%
+    padding: 20px 0
+
+    text-decoration: none
+    color: white
+    
     display: flex
     justify-content: flex-start 
     align-items: center
-    height: 30px
+
+    cursor: pointer
+    &:hover
+      background-color: #A1A1AA
     &__icon
       width: 24px
       height: 24px

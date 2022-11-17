@@ -1,4 +1,5 @@
 import React from "react";
+import ProjList from "../ProjContent/ProjContent";
 import "./ProjectContent.style.sass";
 
 
@@ -11,7 +12,7 @@ export default function ProjectContent() {
                 </div>
             </div>
             <div className="content">
-                Content
+                <ProjList />
             </div>
         </div>
     )
