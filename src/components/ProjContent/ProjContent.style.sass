@@ -1,7 +1,20 @@
-.table-box
-  display: flex
-  justify-content: space-between
-  align-items: center 
-  background-color:#27272A
-  border-bottom: 1px solid #414144
-  padding: 10px
+.table
+  width: 100%
+  background-color: #202124
+  border-collapse: collapse
+  color: white
+  & td
+    border-top: 1px solid #414144
+    border-bottom: 1px solid #414144
+    cursor: pointer
+    padding: 12px
+    text-align: left
+    vertical-align: middle
+  & tr
+    &:hover
+      background-color: white
+  & th
+    text-align: left
+    vertical-align: middle
+    padding: 12px
+    background-color: #202124

@@ -1,0 +1,27 @@
+import React from 'react';
+import { fetchRowsThunk, getRows } from '../../store/RowSlice/rowSlice';
+import './NavBar.style.sass';
+
+export default function NavBar() {
+    const click = () => {
+        fetchRowsThunk()
+    }
+    return (
+        <div className="navbar">
+            <div className="leftBox">
+                <div className="apps" />
+                <div className="reply" />
+                <div onClick={click}>Просмотр</div>
+                <div>Управление</div>
+            </div>
+            <div>
+                <div>
+                    Icon
+                </div>
+                <div>
+                    Full Name
+                </div>
+            </div>
+        </div>
+    )
+}
