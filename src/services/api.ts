@@ -41,7 +41,6 @@ export const API = {
     },
     async getRowList() {
         const response = await instance.get(`v1/outlay-rows/entity/${eID.id}/row/list`)
-        console.log("API: ", response)
         return response
     }
 }

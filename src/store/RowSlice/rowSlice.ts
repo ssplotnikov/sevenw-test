@@ -5,21 +5,6 @@ import { Rows, StateType } from './rowSlice.types';
 
 const initialState: StateType = {
     rows: [
-        {
-            child: null,
-            equipmentCosts: 0,
-            estimatedProfit: 0,
-            id: 0,
-            machineOperatorSalary: 0,
-            mainCosts: 0,
-            materials: 0,
-            mimExploitation: 0,
-            overheads: 0,
-            rowName: 'string',
-            salary: 0,
-            supportCosts: 0,
-            total: 0,
-        }
     ],
     edit: null,
     status: 'loading',
@@ -53,7 +38,6 @@ export const fetchRowsThunk = () => async (dispatch: (arg0: { payload: any; type
     try {
         const response = await API.getRowList()
         dispatch(getRows(response.data))
-        console.log(response)
     } catch (err) {
         console.log(err)
     }
@@ -70,8 +54,11 @@ export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: u
 
 // change type for row
 export const addRowThunk = (row: any) => async (dispatch: (arg0: { payload: any; type: "rows/addRow"; }) => void) => {
+    console.log('ADD_ROW_THUNK')
     try {
+        console.log(row)
         const response = await API.createRow(row)
+        console.log(response)
         if (response.status === 200) {
             dispatch(addRow(response.data.current))
         }

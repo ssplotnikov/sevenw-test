@@ -1,40 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { fetchRowsThunk } from '../../store/RowSlice/rowSlice';
+import ProjItem from '../ProjItem/ProjItem';
 import './ProjContent.style.sass';
 
 
 export default function ProjList() {
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(fetchRowsThunk())
+    }, [])
     const datas = useAppSelector(state => state.rows.rows)
-    console.log('list: ', datas)
     return (
         <div>
             <table className="table">
-                <tr>
-                    <th>Уровень</th>
-                    <th>Наименование работ</th>
-                    <th>Основная з/п</th>
-                    <th>Оборудование</th>
-                    <th>накладные расходы</th>
-                    <th>Сметная прибыль</th>
-                </tr>
-                {datas.map((data) => (
-                    <ProjItem data={data} />
-                ))}
+                <thead>
+                    <tr>
+                        <th>Уровень</th>
+                        <th>Наименование работ</th>
+                        <th>Основная з/п</th>
+                        <th>Оборудование</th>
+                        <th>накладные расходы</th>
+                        <th>Сметная прибыль</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {datas.length ?
+                        datas.map((data: any) => (
+                            <ProjItem data={data} key={data.id} count={1} />
+                        ))
+                        : <ProjItem data={0} />}
+                </tbody>
             </table>
         </div>
     )
 }
 
 
-function ProjItem({ data }) {
-    return (
-        <tr>
-            <td>{data.child || 1}</td>
-            <td>{data.rowName}</td>
-            <td>{data.mainCosts}</td>
-            <td>{data.equipmantCosts}</td>
-            <td>{data.supportCosts}</td>
-            <td>&nbsp;</td>
-        </tr>
-    )
-}
