@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import { fetchRowsThunk } from '../../store/RowSlice/rowSlice';
+import { fetchList, fetchRowsThunk } from '../../store/RowSlice/rowSlice';
 import ProjItem from '../ProjItem/ProjItem';
 import './ProjContent.style.sass';
 
 
 export default function ProjList() {
     const dispatch = useAppDispatch()
+    const datas = useAppSelector(state => state.rows.rows)
     useEffect(() => {
         dispatch(fetchRowsThunk())
     }, [])
-    const datas = useAppSelector(state => state.rows.rows)
+    useEffect(() => {
+        dispatch(fetchList())
+    }, [datas])
     return (
         <div>
             <table className="table">

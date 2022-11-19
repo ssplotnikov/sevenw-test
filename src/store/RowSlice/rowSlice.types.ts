@@ -15,7 +15,6 @@ type Rows = {
 }
 type StateType = {
     rows: Rows[]
-    edit: Rows | null
     status: string
     error: string
 }

@@ -19,7 +19,8 @@ type Row = {
     "overheads": number,
     "rowName": string,
     "salary": number,
-    "supportCosts": number
+    "supportCosts": number,
+    "id": number
 }
 
 export const API = {

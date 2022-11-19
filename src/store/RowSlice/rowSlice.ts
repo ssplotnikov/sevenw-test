@@ -6,7 +6,6 @@ import { Rows, StateType } from './rowSlice.types';
 const initialState: StateType = {
     rows: [
     ],
-    edit: null,
     status: 'loading',
     error: ''
 }
@@ -14,13 +13,26 @@ export const rowSlice = createSlice({
     name: 'rows',
     initialState,
     reducers: {
+        fetchList: (state) => {
+            state.rows
+        },
         getRows: (state, action) => {
             state.rows = action.payload
         },
         updateRow: (state, action: any) => {
-            state.rows.map((row) => {
-                if (row.id === action.payload.id) {
-                    return { ...row, ...action.payload }
+            return state.rows.map((row) => {
+                console.log(row.id)
+                console.log(action.payload.current)
+                if (row.id === action.payload.current.id) {
+                    return { ...row, ...action.payload.current }
+                }
+                if (row.id !== action.payload.current.id) {
+                    return row?.child.map((chi) => {
+                        if (chi.id === action.payload.current.id) {
+                            return { ...chi, ...action.payload.current }
+
+                        }
+                    })
                 }
                 return row
             })
@@ -42,7 +54,6 @@ export const fetchRowsThunk = () => async (dispatch: (arg0: { payload: any; type
         console.log(err)
     }
 }
-// change type for row
 export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: undefined; type: "rows/updateRow"; } | { payload: any; type: "rows/updateRow"; }) => void) => {
     try {
         const response = await API.updateRow(row)
@@ -52,7 +63,6 @@ export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: u
     }
 }
 
-// change type for row
 export const addRowThunk = (row: any) => async (dispatch: (arg0: { payload: any; type: "rows/addRow"; }) => void) => {
     console.log('ADD_ROW_THUNK')
     try {
@@ -77,4 +87,4 @@ export const deleteRowThunk = (id: number) => async (dispatch: (arg0: { payload:
         console.log(err)
     }
 }
-export const { getRows, addRow, deleteRow, updateRow } = rowSlice.actions
+export const { getRows, addRow, deleteRow, updateRow, fetchList } = rowSlice.actions
