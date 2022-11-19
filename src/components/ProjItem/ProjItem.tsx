@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import useInput from '../../hooks/useInput/useInput';
 import { Props } from './ProjItem.types'
 import './ProjItem.style.sass'
 import { addRowThunk, deleteRowThunk, updateRowThunk } from '../../store/RowSlice/rowSlice';
 import { useAppDispatch } from '../../hooks/redux-hooks';
-import EditMode from '../EditMode/EditMode';
+import EditMode from '../EditMode';
 import { shallowEqual } from 'react-redux';
 
 export default function ProjItem({ data, edit = false, count }: Props) {
@@ -17,7 +17,7 @@ export default function ProjItem({ data, edit = false, count }: Props) {
     const [overheads, handlerOverheads] = useInput(data.overheads)
     const [estimated, handlerEstimated] = useInput(data.estimatedProfit)
 
-    const addRow = (id) => {
+    const addRow = (id: number | null) => {
         dispatch(addRowThunk({
             "equipmentCosts": equipCosts,
             "estimatedProfit": estimated,

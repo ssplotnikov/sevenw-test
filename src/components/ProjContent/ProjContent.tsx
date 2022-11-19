@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import { fetchList, fetchRowsThunk } from '../../store/RowSlice/rowSlice';
-import ProjItem from '../ProjItem/ProjItem';
+import ProjItem from '../ProjItem';
 import './ProjContent.style.sass';
 
 
