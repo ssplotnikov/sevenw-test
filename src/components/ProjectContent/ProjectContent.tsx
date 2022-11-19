@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { fetchRowsThunk } from "../../store/RowSlice/rowSlice";
-import ProjList from "../ProjContent/ProjContent";
+import ProjContent from "../ProjContent";
 import "./ProjectContent.style.sass";
 
 
@@ -16,7 +16,7 @@ export default function ProjectContent() {
                 </div>
             </div>
             <div className="content">
-                <ProjList />
+                <ProjContent />
             </div>
         </div>
     )

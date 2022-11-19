@@ -5,7 +5,7 @@ import ProjItem from '../ProjItem';
 import './ProjContent.style.sass';
 
 
-export default function ProjList() {
+export default function ProjContent() {
     const dispatch = useAppDispatch()
     const datas = useAppSelector(state => state.rows.rows)
     useEffect(() => {
