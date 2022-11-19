@@ -1,7 +1,7 @@
 export type Props = {
-    data: Data;
+    data: Data | number;
     edit?: boolean;
-    count: number;
+    count?: number;
 }
 
 type Data = {

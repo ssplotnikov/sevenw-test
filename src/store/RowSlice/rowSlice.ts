@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Dispatch } from 'react';
 import { API } from '../../services/api';
-import { Rows, StateType } from './rowSlice.types';
+import { StateType } from './rowSlice.types';
 
 const initialState: StateType = {
     rows: [
@@ -16,18 +15,16 @@ export const rowSlice = createSlice({
         fetchList: (state) => {
             state.rows
         },
-        getRows: (state, action) => {
+        getRows: (state, action: any) => {
             state.rows = action.payload
         },
         updateRow: (state, action: any) => {
-            return state.rows.map((row) => {
-                console.log(row.id)
-                console.log(action.payload.current)
+            return state.rows.map((row: any) => {
                 if (row.id === action.payload.current.id) {
                     return { ...row, ...action.payload.current }
                 }
                 if (row.id !== action.payload.current.id) {
-                    return row?.child.map((chi) => {
+                    return row?.child.map((chi: any) => {
                         if (chi.id === action.payload.current.id) {
                             return { ...chi, ...action.payload.current }
 
@@ -46,7 +43,7 @@ export const rowSlice = createSlice({
     }
 })
 
-export const fetchRowsThunk = () => async (dispatch: (arg0: { payload: any; type: "rows/getRows"; }) => void) => {
+export const fetchRowsThunk = () => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
     try {
         const response = await API.getRowList()
         dispatch(getRows(response.data))
@@ -54,7 +51,7 @@ export const fetchRowsThunk = () => async (dispatch: (arg0: { payload: any; type
         console.log(err)
     }
 }
-export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: undefined; type: "rows/updateRow"; } | { payload: any; type: "rows/updateRow"; }) => void) => {
+export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
     try {
         const response = await API.updateRow(row)
         dispatch(updateRow(response.data))
@@ -63,12 +60,9 @@ export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: u
     }
 }
 
-export const addRowThunk = (row: any) => async (dispatch: (arg0: { payload: any; type: "rows/addRow"; }) => void) => {
-    console.log('ADD_ROW_THUNK')
+export const addRowThunk = (row: any) => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
     try {
-        console.log(row)
         const response = await API.createRow(row)
-        console.log(response)
         if (response.status === 200) {
             dispatch(addRow(response.data.current))
         }
@@ -77,7 +71,7 @@ export const addRowThunk = (row: any) => async (dispatch: (arg0: { payload: any;
     }
 }
 
-export const deleteRowThunk = (id: number) => async (dispatch: (arg0: { payload: any; type: "rows/deleteRow"; }) => void) => {
+export const deleteRowThunk = (id: number) => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
     try {
         const response = await API.deleteRow(id)
         if (response.status === 200) {
