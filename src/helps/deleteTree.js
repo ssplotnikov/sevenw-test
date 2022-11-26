@@ -2,11 +2,13 @@ export default function deleteTree(element, actionObj) {
     for (let j = 0; j < element.lenght; j++) {
         if (element[j].id === actionObj.id) {
             const index = element.indexOf(element[j])
+            console.log(index)
             return element.slice(index, 1)
         }
         else if (element[j].child !== null) {
             let result = null;
-            for (let i = 0; result === null && i < element[j].child.lenght; i++) {
+            console.log(result)
+            if (result === null) {
                 result = deleteTree(element[j].child, actionObj);
             }
             return result;

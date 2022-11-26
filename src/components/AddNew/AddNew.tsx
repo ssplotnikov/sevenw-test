@@ -1,19 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import EditMode from "../EditMode";
 
 
-export default function AddNew({ isEdit, parantId, Submit, count, createParent, createChild, data }) {
+export default function AddNew({ isEdit, parantId, Submit, count, createParent, createChild }) {
     const handleSubmit = () => {
         Submit(parantId || null)
     }
+    const [form, setForm] = useState({
+        rowName: '',
+        mainCosts: 0,
+        equipCosts: 0,
+        overheads: 0,
+        estimated: 0
+
+    })
+    const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+    }
     return (
-        <tr onDoubleClick={handlerChangeEdit} onKeyDown={handleSubmit} onMouseEnter={() => console.log("mouse up")}>
-            <EditMode isEdit={isEdit} count={count} createParent={createParent} createChild={createChild} deleteRow={deleteRow} />
-            <td><input type="text" placeholder={'Наименование работ'} value={data.rowName} onChange={handlerRowName} className="input" /></td>
-            <td><input type="text" placeholder={'Основнaя з/п'} value={data.mainCosts} onChange={handlerMainCosts} className="input" /></td>
-            <td><input type="text" placeholder={'Оборудование'} value={data.equipCosts} onChange={handlerEquipCosts} className="input" /></td>
-            <td><input type="text" placeholder={'Накладные расходы'} value={data.overheads} onChange={handlerOverheads} className="input" /></td>
-            <td><input type="text" placeholder={'Сметная прибыль'} value={data.estimated} onChange={handlerEstimated} className="input" /></td>
-        </tr>
+        <tr onKeyDown={handleSubmit} >
+            <EditMode count={count} isEdit={true} />
+            <td><input type="text" name="rowName" placeholder={'Наименование работ'} value={form.rowName} onChange={handleForm} className="input" /></td>
+            <td><input type="text" name="mainCosts" placeholder={'Основнaя з/п'} value={form.mainCosts} onChange={handleForm} className="input" /></td>
+            <td><input type="text" name="equipCosts" placeholder={'Оборудование'} value={form.equipCosts} onChange={handleForm} className="input" /></td>
+            <td><input type="text" name="overheads" placeholder={'Накладные расходы'} value={form.overheads} onChange={handleForm} className="input" /></td>
+            <td><input type="text" name="estimated" placeholder={'Сметная прибыль'} value={form.estimated} onChange={handleForm} className="input" /></td>
+        </tr >
     )
 }
