@@ -1,5 +1,5 @@
 type Rows = {
-    child: Rows[] | null,
+    child: Rows[] | null | [],
     equipmentCosts: number,
     estimatedProfit: number,
     id: number,
@@ -17,5 +17,7 @@ type StateType = {
     rows: Rows[]
     status: string
     error: string
+    isEdit: boolean
+    isAdd: boolean
 }
 export type { Rows, StateType }

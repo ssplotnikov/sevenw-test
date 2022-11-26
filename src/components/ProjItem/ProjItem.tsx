@@ -2,15 +2,25 @@ import React, { useState } from 'react';
 import useInput from '../../hooks/useInput/useInput';
 import { Props } from './ProjItem.types'
 import './ProjItem.style.sass'
-import { addRowThunk, deleteRowThunk, updateRowThunk } from '../../store/RowSlice/rowSlice';
-import { useAppDispatch } from '../../hooks/redux-hooks';
+import { addRowThunk, deleteRowThunk, updateRowThunk, toggleEdit, toggleAdd } from '../../store/RowSlice/rowSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
 import EditMode from '../EditMode';
 import { shallowEqual } from 'react-redux';
+import AddNew from '../AddNew/AddNew';
 
-export default function ProjItem({ data, edit = false, count }: Props) {
+export default function ProjItem({ data, count }: Props) {
     const dispatch = useAppDispatch()
-    const [toggle, setToggle] = useState(edit)
+    const isEdit = useAppSelector((state) => state.rows.isEdit)
 
+    const handlerEdit = () => {
+        dispatch(toggleEdit())
+    }
+    const handlerChangeEdit = () => {
+        setChange(false)
+        handlerEdit()
+    }
+    const [add, setAdd] = useState(false)
+    const [change, setChange] = useState(false)
     const [rowName, handlerRowName] = useInput(data.rowName)
     const [mainCosts, handlerMainCosts] = useInput(data.mainCosts)
     const [equipCosts, handlerEquipCosts] = useInput(data.equipmentCosts)
@@ -76,50 +86,45 @@ export default function ProjItem({ data, edit = false, count }: Props) {
         }
     }
 
-    const Submit = (e: { code: string; }) => {
+    const Submit = (e: { code: string; }, id: number | null) => {
         if (e.code === 'Enter' && !data.id) {
-            console.log('add')
-            setToggle(false)
+            handlerEdit()
+            setAdd(false)
             addRow(null)
         }
+        if (add && e.code === 'Enter') {
+            handlerEdit()
+            setAdd(false)
+            addRow(id)
+
+        }
         if (e.code === 'Enter') {
-            console.log('update')
-            setToggle(false)
+            handlerEdit()
+            setAdd(false)
             updateRow()
         }
     }
     const createParent = () => {
-        addRow(null)
-
+        setAdd(true)
+        setParantId(null)
+        handlerEdit()
     }
     const deleteRow = () => {
         dispatch(deleteRowThunk(data.id))
     }
     const createChild = () => {
-        addRow(data.id)
-
+        setAdd(true)
+        setParantId(data.id)
+        handlerEdit()
     }
-    if (!data) {
-        return (
-            <>
-                <tr onDoubleClick={() => setToggle(true)} onKeyDown={Submit}>
-                    <td>{count}</td>
-                    <td><input type="text" placeholder={rowName || 'Наименование работ'} value={rowName} onChange={handlerRowName} className="input" /></td>
-                    <td><input type="text" placeholder={mainCosts || 'Основнaя з/п'} value={mainCosts} onChange={handlerMainCosts} className="input" /></td>
-                    <td><input type="text" placeholder={equipCosts || 'Оборудование'} value={equipCosts} onChange={handlerEquipCosts} className="input" /></td>
-                    <td><input type="text" placeholder={overheads || 'Накладные расходы'} value={overheads} onChange={handlerOverheads} className="input" /></td>
-                    <td><input type="text" placeholder={estimated || 'Сметная прибыль'} value={estimated} onChange={handlerEstimated} className="input" /></td>
-                </tr>
-            </>
-        )
-    }
+    const [parantId, setParantId] = useState<number | null>(null)
     return (
         <>
-            <tr onDoubleClick={() => setToggle(true)} onKeyDown={Submit} onMouseEnter={() => console.log("mouse up")}>
-                {toggle ?
+            <tr onDoubleClick={handlerChangeEdit} onKeyDown={Submit} onMouseEnter={() => console.log("mouse up")}>
+                {change ?
                     (
                         <>
-                            <EditMode isEdit={toggle} count={count} createParent={createParent} createChild={createChild} deleteRow={deleteRow} />
+                            <EditMode isEdit={isEdit} count={count} createParent={createParent} createChild={createChild} deleteRow={deleteRow} />
                             <td><input type="text" placeholder={rowName || 'Наименование работ'} value={rowName} onChange={handlerRowName} className="input" /></td>
                             <td><input type="text" placeholder={mainCosts || 'Основнaя з/п'} value={mainCosts} onChange={handlerMainCosts} className="input" /></td>
                             <td><input type="text" placeholder={equipCosts || 'Оборудование'} value={equipCosts} onChange={handlerEquipCosts} className="input" /></td>
@@ -130,7 +135,7 @@ export default function ProjItem({ data, edit = false, count }: Props) {
                     :
                     (
                         <>
-                            <EditMode isEdit={toggle} count={count} createParent={createParent} createChild={createChild} deleteRow={deleteRow} />
+                            <EditMode isEdit={isEdit} count={count} createParent={createParent} createChild={createChild} deleteRow={deleteRow} />
                             <td>{data.rowName}</td>
                             <td>{data.mainCosts}</td>
                             <td>{data.equipmentCosts}</td>
@@ -143,6 +148,7 @@ export default function ProjItem({ data, edit = false, count }: Props) {
             {data?.child?.length ? (data.child.map((chil) => (
                 <ProjItem data={chil} count={++count} key={chil.id} />
             ))) : null}
+            {add && <AddNew parentId={parantId} />}
         </>
     )
 }

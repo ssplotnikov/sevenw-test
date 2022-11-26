@@ -1,7 +1,7 @@
 export type Props = {
-    data: Data | number;
+    data: Data;
     edit?: boolean;
-    count?: number;
+    count?: number | undefined;
 }
 
 type Data = {
@@ -16,6 +16,6 @@ type Data = {
     salary: number
     supportCosts: number
     total: number
-    child: Data[];
+    child: Data[] | null;
     rowName: string;
 }
