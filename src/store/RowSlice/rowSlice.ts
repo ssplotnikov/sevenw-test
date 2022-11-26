@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { searchTree } from "../../helps/searchTree";
 import { API } from '../../services/api';
 import { StateType } from './rowSlice.types';
 
@@ -6,14 +7,15 @@ const initialState: StateType = {
     rows: [
     ],
     status: 'loading',
-    error: ''
+    error: '',
+    isEdit: false,
 }
 export const rowSlice = createSlice({
     name: 'rows',
     initialState,
     reducers: {
-        fetchList: (state) => {
-            state.rows
+        toggleEdit: (state) => {
+            state.isEdit = !state.isEdit
         },
         getRows: (state, action: any) => {
             state.rows = action.payload
@@ -81,4 +83,4 @@ export const deleteRowThunk = (id: number) => async (dispatch: (arg0: { payload:
         console.log(err)
     }
 }
-export const { getRows, addRow, deleteRow, updateRow, fetchList } = rowSlice.actions
+export const { toggleEdit, toggleAdd, getRows, addRow, deleteRow, updateRow, fetchList } = rowSlice.actions

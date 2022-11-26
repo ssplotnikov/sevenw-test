@@ -11,9 +11,6 @@ export default function ProjContent() {
     useEffect(() => {
         dispatch(fetchRowsThunk())
     }, [])
-    useEffect(() => {
-        dispatch(fetchList())
-    }, [datas])
     return (
         <div>
             <table className="table">
