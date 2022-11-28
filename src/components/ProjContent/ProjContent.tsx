@@ -29,7 +29,7 @@ export default function ProjContent() {
                         datas.map((data: any) => (
                             <ProjItem data={data} key={data.id} count={1} />
                         ))
-                        : <ProjItem data={0} />}
+                        : <ProjItem data={0} count={1} />}
                 </tbody>
             </table>
         </div>

@@ -1,43 +1,47 @@
-import React, { useState } from 'react';
-import useInput from '../../hooks/useInput/useInput';
-import { Props } from './ProjItem.types'
-import './ProjItem.style.sass'
-import { addRowThunk, deleteRowThunk, updateRowThunk, toggleEdit, toggleAdd } from '../../store/RowSlice/rowSlice';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
-import EditMode from '../EditMode';
+import React, { useEffect, useState } from 'react';
 import { shallowEqual } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux-hooks';
+import { addRowThunk, deleteRowThunk, updateRowThunk, toggleEdit } from '../../store/RowSlice/rowSlice';
+import EditMode from '../EditMode';
 import AddNew from '../AddNew/AddNew';
+import { Obj, Props } from './ProjItem.types'
+import './ProjItem.style.sass'
 
-export default function ProjItem({ data, count }: Props) {
+export default function ProjItem({ data, count = 0 }: Props) {
     const dispatch = useAppDispatch()
     const isEdit = useAppSelector((state) => state.rows.isEdit)
 
-    const handlerEdit = () => {
-        dispatch(toggleEdit())
-    }
-    const handlerChangeEdit = () => {
-        setChange(false)
-        handlerEdit()
-    }
     const [add, setAdd] = useState(false)
     const [change, setChange] = useState(false)
-    const [rowName, handlerRowName] = useInput(data.rowName)
-    const [mainCosts, handlerMainCosts] = useInput(data.mainCosts)
-    const [equipCosts, handlerEquipCosts] = useInput(data.equipmentCosts)
-    const [overheads, handlerOverheads] = useInput(data.overheads)
-    const [estimated, handlerEstimated] = useInput(data.estimatedProfit)
+    const [parentId, setParentId] = useState<number | null>(null)
+    const counter = count + 1
 
-    const addRow = (id: number | null) => {
+    const [editForm, setEditForm] = useState({
+        rowName: data.rowName,
+        mainCosts: data.mainCosts || null,
+        equipCosts: data.equipmentCosts || null,
+        overheads: data.overheads || null,
+        estimated: data.equipmentCosts || null
+    })
+
+    const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditForm((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+    }
+
+    const addRow = (id: any, obj: any) => {
         dispatch(addRowThunk({
-            "equipmentCosts": equipCosts,
-            "estimatedProfit": estimated,
+            "equipmentCosts": obj.equipCosts,
+            "estimatedProfit": obj.estimated,
             "machineOperatorSalary": 0,
-            "mainCosts": mainCosts,
+            "mainCosts": obj.mainCosts,
             "materials": 0,
             "mimExploitation": 0,
-            "overheads": overheads,
+            "overheads": obj.overheads,
             "parentId": id || null,
-            "rowName": rowName,
+            "rowName": obj.rowName,
             "salary": 0,
             "supportCosts": 0
         }))
@@ -58,27 +62,27 @@ export default function ProjItem({ data, count }: Props) {
                 "supportCosts": 0,
                 "id": data.id
             }, {
-                "equipmentCosts": equipCosts,
-                "estimatedProfit": estimated,
+                "equipmentCosts": editForm.equipCosts,
+                "estimatedProfit": editForm.estimated,
                 "machineOperatorSalary": 0,
-                "mainCosts": mainCosts,
+                "mainCosts": editForm.mainCosts,
                 "materials": 0,
                 "mimExploitation": 0,
-                "overheads": overheads,
-                "rowName": rowName,
+                "overheads": editForm.overheads,
+                "rowName": editForm.rowName,
                 "salary": 0,
                 "supportCosts": 0,
                 "id": data.id
             })) {
             dispatch(updateRowThunk({
-                "equipmentCosts": equipCosts,
-                "estimatedProfit": estimated,
+                "equipmentCosts": editForm.equipCosts,
+                "estimatedProfit": editForm.estimated,
                 "machineOperatorSalary": 0,
-                "mainCosts": mainCosts,
+                "mainCosts": editForm.mainCosts,
                 "materials": 0,
                 "mimExploitation": 0,
-                "overheads": overheads,
-                "rowName": rowName,
+                "overheads": editForm.overheads,
+                "rowName": editForm.rowName,
                 "salary": 0,
                 "supportCosts": 0,
                 "id": data.id
@@ -86,50 +90,73 @@ export default function ProjItem({ data, count }: Props) {
         }
     }
 
-    const Submit = (e: { code: string; }, id: number | null) => {
-        if (e.code === 'Enter' && !data.id) {
-            handlerEdit()
+    const Submit = (e: { code: string; }, obj: Obj): void => {
+        console.log(obj)
+        if (e.code === 'Enter' && data === 0) {
+            addRow(parentId, obj)
+            changeIsEdit(false)
             setAdd(false)
-            addRow(null)
+            setChange(false)
         }
         if (add && e.code === 'Enter') {
-            handlerEdit()
+            addRow(parentId, obj)
+            changeIsEdit(false)
             setAdd(false)
-            addRow(id)
-
+            setChange(false)
         }
         if (e.code === 'Enter') {
-            handlerEdit()
-            setAdd(false)
             updateRow()
+            changeIsEdit(false)
+            setAdd(false)
+            setChange(false)
         }
     }
+
+    const changeIsEdit = (param: boolean): void => {
+        dispatch(toggleEdit(param))
+    }
+
+    const handlerChangeEdit = () => {
+        setChange(true)
+        changeIsEdit(true)
+    }
+
     const createParent = () => {
         setAdd(true)
-        setParantId(null)
-        handlerEdit()
+        changeIsEdit(true)
     }
-    const deleteRow = () => {
-        dispatch(deleteRowThunk(data.id))
-    }
+
     const createChild = () => {
+        setParentId(data.id)
         setAdd(true)
-        setParantId(data.id)
-        handlerEdit()
+        changeIsEdit(true)
     }
-    const [parantId, setParantId] = useState<number | null>(null)
+
+    const deleteRow = () => {
+        dispatch(deleteRowThunk(data))
+    }
+    useEffect(() => {
+        if (data === 0) {
+            handlerChangeEdit()
+        } else {
+            setChange(false)
+            changeIsEdit(false)
+        }
+    })
+
+    console.log(data)
     return (
         <>
-            <tr onDoubleClick={handlerChangeEdit} onKeyDown={Submit} onMouseEnter={() => console.log("mouse up")}>
+            <tr onDoubleClick={handlerChangeEdit} onKeyDown={(e) => Submit(e, editForm)} >
                 {change ?
                     (
                         <>
                             <EditMode isEdit={isEdit} count={count} createParent={createParent} createChild={createChild} deleteRow={deleteRow} />
-                            <td><input type="text" placeholder={rowName || 'Наименование работ'} value={rowName} onChange={handlerRowName} className="input" /></td>
-                            <td><input type="text" placeholder={mainCosts || 'Основнaя з/п'} value={mainCosts} onChange={handlerMainCosts} className="input" /></td>
-                            <td><input type="text" placeholder={equipCosts || 'Оборудование'} value={equipCosts} onChange={handlerEquipCosts} className="input" /></td>
-                            <td><input type="text" placeholder={overheads || 'Накладные расходы'} value={overheads} onChange={handlerOverheads} className="input" /></td>
-                            <td><input type="text" placeholder={estimated || 'Сметная прибыль'} value={estimated} onChange={handlerEstimated} className="input" /></td>
+                            <td><input type="text" name="rowName" placeholder={editForm.rowName || 'Наименование работ'} value={editForm.rowName} onChange={handleForm} className="input" /></td>
+                            <td><input type="text" name="mainCosts" placeholder={editForm.mainCosts || 'Основнaя з/п'} value={editForm.mainCosts} onChange={handleForm} className="input" /></td>
+                            <td><input type="text" name="equipCosts" placeholder={editForm.equipCosts || 'Оборудование'} value={editForm.equipCosts} onChange={handleForm} className="input" /></td>
+                            <td><input type="text" name="overheads" placeholder={editForm.overheads || 'Накладные расходы'} value={editForm.overheads} onChange={handleForm} className="input" /></td>
+                            <td><input type="text" name="estimated" placeholder={editForm.estimated || 'Сметная прибыль'} value={editForm.estimated} onChange={handleForm} className="input" /></td>
                         </>
                     )
                     :
@@ -145,10 +172,12 @@ export default function ProjItem({ data, count }: Props) {
                     )
                 }
             </tr>
-            {data?.child?.length ? (data.child.map((chil) => (
-                <ProjItem data={chil} count={++count} key={chil.id} />
-            ))) : null}
-            {add && <AddNew parentId={parantId} />}
+            {add && <AddNew Submit={Submit} isEdit={isEdit} parentId={parentId} />}
+            {
+                data?.child?.length ? (data.child.map((chil) => (
+                    <ProjItem data={chil} count={counter} key={chil.id} />
+                ))) : null
+            }
         </>
     )
 }
