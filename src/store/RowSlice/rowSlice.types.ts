@@ -18,6 +18,9 @@ type StateType = {
     status: string
     error: string
     isEdit: boolean
-    isAdd: boolean
 }
-export type { Rows, StateType }
+type AddRow = {
+    parentId: any
+    newRow: Rows,
+}
+export type { AddRow, Rows, StateType }

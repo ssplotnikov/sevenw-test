@@ -1,11 +1,13 @@
-export default function updateTree(elements, targetElement) {
+export default function addTree(elements, targetElement, parentId = null) {
+    if (parentId === null) {
+        elements.push(targetElement)
+        return elements
+    }
 
     function find(elements, targetElement) {
         for (const element of elements) {
-            if (element.id === targetElement.id) {
-                for (const key in targetElement) {
-                    element[key] = targetElement[key]
-                }
+            if (element.id === parentId) {
+                element.child.push(targetElement)
                 return
             }
             if (element.child) {

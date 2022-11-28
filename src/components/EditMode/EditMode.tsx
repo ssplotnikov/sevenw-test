@@ -22,8 +22,7 @@ export default function EditMode({ count, createParent, createChild, deleteRow, 
                     <div className="delete" onClick={deleteRow} />
                 </div>
             }
-            {
-                count >= 3 &&
+            {count >= 3 &&
                 <div className={`box ${isHover && !isEdit ? "hover" : ""}`}>
                     <div className="file main" onClick={createChild} />
                     <div className="delete" onClick={deleteRow} />

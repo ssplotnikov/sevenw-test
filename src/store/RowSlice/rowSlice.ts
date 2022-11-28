@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { searchTree } from "../../helps/searchTree";
+import addTree from '../../helps/addTree';
+import deleteTree from '../../helps/deleteTree';
+import updateTree from '../../helps/updateTree';
 import { API } from '../../services/api';
-import { StateType } from './rowSlice.types';
+import { Rows, StateType, AddRow } from './rowSlice.types';
 
 const initialState: StateType = {
     rows: [
@@ -14,33 +16,23 @@ export const rowSlice = createSlice({
     name: 'rows',
     initialState,
     reducers: {
-        toggleEdit: (state) => {
-            state.isEdit = !state.isEdit
+        toggleEdit: (state, action: PayloadAction<boolean>) => {
+            state.isEdit = action.payload
         },
-        getRows: (state, action: any) => {
+        getRows: (state, action: PayloadAction<Rows[]>) => {
             state.rows = action.payload
         },
-        updateRow: (state, action: any) => {
-            return state.rows.map((row: any) => {
-                if (row.id === action.payload.current.id) {
-                    return { ...row, ...action.payload.current }
-                }
-                if (row.id !== action.payload.current.id) {
-                    return row?.child.map((chi: any) => {
-                        if (chi.id === action.payload.current.id) {
-                            return { ...chi, ...action.payload.current }
-
-                        }
-                    })
-                }
-                return row
-            })
+        updateRow: (state, action: PayloadAction<Rows>) => {
+            state.rows = updateTree(state.rows, action.payload)
         },
-        addRow: (state, action) => {
-            state.rows.push(action.payload)
+        addRow: (state, action: PayloadAction<AddRow>) => {
+            state.rows = addTree(state.rows, action.payload.newRow, action.payload.parentId)
         },
-        deleteRow: (state, action) => {
-            state.rows.filter((row) => row.id === action.payload)
+        deleteRow: (state, action: PayloadAction<Rows>) => {
+            state.rows = deleteTree(state.rows, action.payload)
+        },
+        setError: (state, action: PayloadAction<any>) => {
+            state.error = action.payload
         }
     }
 })
@@ -50,15 +42,19 @@ export const fetchRowsThunk = () => async (dispatch: (arg0: { payload: any; type
         const response = await API.getRowList()
         dispatch(getRows(response.data))
     } catch (err) {
-        console.log(err)
+        dispatch(setError(err))
     }
 }
 export const updateRowThunk = (row: any) => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
     try {
         const response = await API.updateRow(row)
-        dispatch(updateRow(response.data))
+        dispatch(updateRow(response.data.current))
+        response.data.changed.map((change: Rows) => {
+            dispatch(updateRow(change))
+
+        })
     } catch (err) {
-        console.log(err)
+        dispatch(setError(err))
     }
 }
 
@@ -66,21 +62,29 @@ export const addRowThunk = (row: any) => async (dispatch: (arg0: { payload: any;
     try {
         const response = await API.createRow(row)
         if (response.status === 200) {
-            dispatch(addRow(response.data.current))
+            dispatch(addRow({ newRow: response.data.current, parentId: row.parentId }))
+            response.data.changed.map((change: Rows) => {
+                dispatch(updateRow(change))
+
+            })
         }
     } catch (err) {
-        console.log(err)
+        dispatch(setError(err))
     }
 }
 
-export const deleteRowThunk = (id: number) => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
+export const deleteRowThunk = (row: Rows) => async (dispatch: (arg0: { payload: any; type: `rows/${string}`; }) => void) => {
     try {
-        const response = await API.deleteRow(id)
+        const response = await API.deleteRow(row.id)
         if (response.status === 200) {
-            dispatch(deleteRow(id))
+            dispatch(deleteRow(row))
+            response.data.changed.map((change: Rows) => {
+                dispatch(updateRow(change))
+
+            })
         }
     } catch (err) {
-        console.log(err)
+        dispatch(setError(err))
     }
 }
-export const { toggleEdit, toggleAdd, getRows, addRow, deleteRow, updateRow, fetchList } = rowSlice.actions
+export const { setError, toggleEdit, getRows, addRow, deleteRow, updateRow, } = rowSlice.actions

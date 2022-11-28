@@ -1,5 +1,5 @@
-export type Props = {
-    data: Data;
+type Props = {
+    data: Data
     edit?: boolean;
     count?: number | undefined;
 }
@@ -19,3 +19,15 @@ type Data = {
     child: Data[] | null;
     rowName: string;
 }
+
+type Obj = {
+    id: number
+    rowName: string
+    mainCosts: number
+    overheads: number
+    equipCosts: number
+    estimated: number
+
+}
+
+export type { Props, Data, Obj }
